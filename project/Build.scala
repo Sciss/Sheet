@@ -20,7 +20,7 @@ object Build extends Build {
     parallelExecution in Compile := true
   )
 
-  lazy val publishSetting = publishTo <<= (version).apply { v ⇒
+  lazy val publishSetting = publishTo <<= version.apply { v ⇒
       val nexus = "https://oss.sonatype.org/"
       if (v.trim.endsWith("SNAPSHOT"))
         Some("snapshots" at nexus + "content/repositories/snapshots")
@@ -47,12 +47,12 @@ object Build extends Build {
     Seq(
       name := "poi-scala",
       resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
-      libraryDependencies <++= (scalaVersion) { sv ⇒
+      libraryDependencies <++= scalaVersion { sv ⇒
         Seq(
           "org.apache.poi" %  "poi"                       % "3.12",
           "org.apache.poi" %  "poi-ooxml"                 % "3.12",
-          "org.scalaz"     %% "scalaz-core"               % scalazVersion,
-          "org.scalaz"     %% "scalaz-effect"             % scalazVersion,
+          "org.scalaz"     %% "scalaz-core"               % scalazVersion  % "test",
+//          "org.scalaz"     %% "scalaz-effect"             % scalazVersion  % "test",
           "org.specs2"     %% "specs2"                    % "2.4.1"        % "test",  // later versions lack scalaz-stream 2.11 dependency
           "org.scalacheck" %% "scalacheck"                % "1.12.3"       % "test",
           "org.scalaz"     %% "scalaz-scalacheck-binding" % scalazVersion  % "test"

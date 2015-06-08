@@ -7,8 +7,6 @@ import org.specs2.ScalaCheck
 import org.specs2.mutable._
 import org.specs2.specification.Scope
 
-import scalaz.scalacheck.ScalazProperties._
-
 class PoiSpec extends Specification with ScalaCheck {
     "Poi" should {
       "create workbook" in {
@@ -106,21 +104,21 @@ class PoiSpec extends Specification with ScalaCheck {
     }
   }
 
-  "Typeclasses" should {
-    "satisfy for Cell" in checkProp {
-      semigroup.laws[Cell]
-   }
-    "satisfy for Row" in checkProp {
-      semigroup.laws[Row]
-    }
-    "satisfy for Sheet" in checkProp {
-      semigroup.laws[Sheet]
-    }
-    "satisfy for Workbook" in checkProp {
-      lazy val result = monoid.laws[info.folone.scala.poi.Workbook]
-      skipped("a lot of nested tests to check, takes a long time")
-    }
-  }
+//  "Typeclasses" should {
+//    "satisfy for Cell" in checkProp {
+//      semigroup.laws[Cell]
+//   }
+//    "satisfy for Row" in checkProp {
+//      semigroup.laws[Row]
+//    }
+//    "satisfy for Sheet" in checkProp {
+//      semigroup.laws[Sheet]
+//    }
+//    "satisfy for Workbook" in checkProp {
+//      lazy val result = monoid.laws[info.folone.scala.poi.Workbook]
+//      skipped("a lot of nested tests to check, takes a long time")
+//    }
+//  }
 
   def positiveInt = Gen.choose(0, Integer.MAX_VALUE)
 
