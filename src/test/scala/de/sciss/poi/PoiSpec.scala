@@ -1,5 +1,7 @@
-package info.folone.scala.poi
+package de.sciss.poi
 
+import de.sciss.poi
+import de.sciss.poi.{FormulaCell, BooleanCell, NumericCell, StringCell, Cell, Row, Sheet, Workbook}
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.scalacheck.Arbitrary._
 import org.scalacheck._
@@ -26,7 +28,7 @@ class PoiSpec extends Specification with ScalaCheck {
           })
         }
         val path = "/tmp/book.xls"
-        /* val io = */ wb.safeToFile(path)
+        /* val io = */ wb.saveToFile(path)
         // io.fold(ex ⇒ throw ex, identity).unsafePerformIO
         // impure.load(path) === wb
         Workbook(path) === wb
@@ -141,7 +143,7 @@ class PoiSpec extends Specification with ScalaCheck {
     rows <- arbitrary[Set[Row]]
   } yield Sheet(name)(rows))
 
-  implicit def arbWorkbook: Arbitrary[info.folone.scala.poi.Workbook] = Arbitrary(for {
+  implicit def arbWorkbook: Arbitrary[poi.Workbook] = Arbitrary(for {
     sheets <- arbitrary[Set[Sheet]]
   } yield Workbook(sheets))
 

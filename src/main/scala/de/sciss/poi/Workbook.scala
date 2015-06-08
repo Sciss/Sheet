@@ -1,4 +1,13 @@
-package info.folone.scala.poi
+/*
+ *  Workbook.scala
+ *  (poi-scala)
+ *
+ *  Copyright (c) 2011-2015 George Leontiev and others. Fork by Hanns Holger Rutz.
+ *
+ *	This software is published under the Apache License 2.0
+ */
+
+package de.sciss.poi
 
 import java.io.{File, FileOutputStream, InputStream, OutputStream}
 
@@ -82,16 +91,16 @@ class Workbook(val sheetMap: Map[String, Sheet], format: WorkbookVersion = HSSF)
     this
   }
 
-  def safeToFile(path: String): Unit = {
+  def saveToFile(path: String): Unit = {
     val fos = new FileOutputStream(new File(path))
     try {
-      safeToStream(fos)
+      saveToStream(fos)
     } finally {
       fos.close()
     }
   }
 
-  def safeToStream(stream: OutputStream): Unit = book.write(stream)
+  def saveToStream(stream: OutputStream): Unit = book.write(stream)
 
   def asPoi: POIWorkbook = book
 
@@ -113,24 +122,12 @@ object Workbook {
   def apply(sheets: Set[Sheet], format: WorkbookVersion = HSSF): Workbook =
     new Workbook(sheets.map( s => (s.name, s)).toMap, format)
 
-  def apply(path: String): Workbook = {
+  def fromFile(path: String, format: WorkbookVersion = HSSF): Workbook = {
     val f = new File(path)
-    fromFile(HSSF)(f)
-  }
-
-  def apply(path: String, format: WorkbookVersion): Workbook = {
-    val f = new File(path)
-    fromFile(format)(f)
-  }
-
-  def apply(is: InputStream): Workbook = fromInputStream(HSSF)(is)
-
-  def apply(is: InputStream, format: WorkbookVersion): Workbook = fromInputStream(format)(is)
-
-  private def fromFile(format: WorkbookVersion)(f: File): Workbook =
     readWorkbook[File](format, f => WorkbookFactory.create(f))(f)
+  }
 
-  private def fromInputStream(format: WorkbookVersion)(is: InputStream): Workbook =
+  def fromInputStream(is: InputStream, format: WorkbookVersion = HSSF): Workbook =
     readWorkbook[InputStream](format, t => WorkbookFactory.create(t))(is)
 
   private def readWorkbook[T](format: WorkbookVersion, workbookF: T => POIWorkbook)(is: T): Workbook = {

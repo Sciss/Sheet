@@ -1,7 +1,8 @@
-package info.folone.scala.poi
+package de.sciss.poi
 
 import java.io.File
 
+import de.sciss.poi.{XSSF, StringCell, Row, Sheet, Workbook}
 import org.specs2._
 
 class PoiLoadFileSpec extends Specification { def is=
@@ -49,7 +50,7 @@ class PoiLoadFileSpec extends Specification { def is=
     // new impure.WorkbookImpure(testBook).overwrite(testBookPath)
     // impure.load(testBookPath).sheets.head
     new File(testBookPath).delete()
-    testBook.safeToFile(testBookPath)
+    testBook.saveToFile(testBookPath)
     Workbook(testBookPath).sheets.head
   }
 

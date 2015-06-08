@@ -1,4 +1,13 @@
-package info.folone.scala.poi
+/*
+ *  CellStyle.scala
+ *  (poi-scala)
+ *
+ *  Copyright (c) 2011-2015 George Leontiev and others. Fork by Hanns Holger Rutz.
+ *
+ *	This software is published under the Apache License 2.0
+ */
+
+package de.sciss.poi
 
 import org.apache.poi.hssf.usermodel.HSSFFont.FONT_ARIAL
 import org.apache.poi.ss.usermodel.{Font => POIFont, DataFormat => POIDataFormat}
@@ -20,12 +29,8 @@ case class Font(
   private def boldWeight = if (bold) POIFont.BOLDWEIGHT_BOLD else POIFont.BOLDWEIGHT_NORMAL
 }
 
-case class DataFormat(
-  format: String ) {
-
-  def appliedTo(poiDataFormat: POIDataFormat): Short = {
-    poiDataFormat.getFormat(format)
-  }
+case class DataFormat(format: String) {
+  def appliedTo(poiDataFormat: POIDataFormat): Short = poiDataFormat.getFormat(format)
 }
 
 
