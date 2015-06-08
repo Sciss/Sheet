@@ -17,8 +17,8 @@ The example usage below is similar, except that you don't have to go through the
 scala> import de.sciss.poi._
 import de.sciss.poi._
 
-scala> val sheetOne = Workbook {
-   Set(Sheet("name") {
+scala> val bookOne = Workbook {
+   Set(Sheet("foo") {
      Set(Row(1) {
        Set(NumericCell(1, 13.0/5), FormulaCell(2, "ABS(A1)"))
      },
@@ -26,21 +26,21 @@ scala> val sheetOne = Workbook {
        Set(StringCell(1, "data"), StringCell(2, "data2"))
      })
    },
-   Sheet("name2") {
+   Sheet("bar") {
      Set(Row(2) {
        Set(BooleanCell(1, true), NumericCell(2, 2.4))
      })
    })
  }
-sheetOne: de.sciss.poi.Workbook = Workbook(Set(Sheet ("name")(Set(Row (1)(Set(NumericCell(1, 2.6), FormulaCell(2, "=ABS(A1)"))), Row (2)(Set(StringCell(1, "data"), StringCell(2, "data2"))))), Sheet ("name2")(Set(Row (2)(Set(BooleanCell(1, true), NumericCell(2, 2.4)))))))
+bookOne: de.sciss.poi.Workbook = Workbook(Sheet("bar")(Row(2)(BooleanCell(1, true), NumericCell(2, 2.4))), Sheet("foo")(Row(1)(NumericCell(1, 2.6), FormulaCell(2, "=ABS(A1)")), Row(2)(StringCell(1, "data"), StringCell(2, "data2"))))
 
 scala> val path = "/tmp/workbook.xls"
 path: String = /tmp/workbook.xls
 
-scala> sheetOne.saveToFile(path)
+scala> bookOne.saveToFile(path)
 
-scala> val sheetTwo = Workbook {
-        Set(Sheet("name") {
+scala> val bookTwo = Workbook {
+        Set(Sheet("foo") {
           Set(Row(1) {
             Set(StringCell(1, "newdata"), StringCell(2, "data2"), StringCell(3, "data3"))
           },
@@ -51,17 +51,23 @@ scala> val sheetTwo = Workbook {
             Set(StringCell(1, "data"), StringCell(2, "data2"))
           })
         },
-        Sheet("name") {
+        Sheet("bar") {
           Set(Row(2) {
             Set(StringCell(1, "data"), StringCell(2, "data2"))
           })
         })
       }
-sheetTwo: de.sciss.poi.Workbook = Workbook(Set(Sheet ("name")(Set(Row (1)(Set(StringCell(1, "newdata"), StringCell(2, "data2"), StringCell(3, "data3"))), Row (2)(Set(StringCell(1, "data"), StringCell(2, "data2"))), Row (3)(Set(StringCell(1, "data"), StringCell(2, "data2"))))), Sheet ("name")(Set(Row (2)(Set(StringCell(1, "data"), StringCell(2, "data2")))))))
+bookTwo: de.sciss.poi.Workbook = Workbook(Sheet("bar")(Row(2)(StringCell(1, "data"), StringCell(2, "data2"))), Sheet("foo")(Row(1)(StringCell(1, "newdata"), StringCell(2, "data2"), StringCell(3, "data3")), Row(2)(StringCell(1, "data"), StringCell(2, "data2")), Row(3)(StringCell(1, "data"), StringCell(2, "data2"))))
 
-scala> val sheetOneReloaded = Workbook.fromFile(path)
-sheetOneReloaded: de.sciss.poi.Workbook = Workbook(Set(Sheet ("name2")(Set(Row (2)(Set(BooleanCell(1, true), NumericCell(2, 2.4))))), Sheet ("name")(Set(Row (2)(Set(StringCell(1, "data"), StringCell(2, "data2"))), Row (1)(Set(NumericCell(1, 2.6), FormulaCell(2, "=ABS(A1)")))))))
+scala> bookTwo.sheetMap("foo").matrix(rows = 2 to 3, columns = 2 to 3) { 
+        case Some(StringCell(_, x)) => x;
+        case _ => "n/a"
+       } .flatten
+res1: scala.collection.immutable.IndexedSeq[String] = Vector(data2, n/a, data2, n/a)
 
-scala> sheetOne == sheetOneReloaded
-res1: Boolean = true
+scala> val bookOneReloaded = Workbook.fromFile(path)
+bookOneReloaded: de.sciss.poi.Workbook = Workbook(Sheet("bar")(Row(2)(BooleanCell(1, true), NumericCell(2, 2.4))), Sheet("foo")(Row(1)(NumericCell(1, 2.6), FormulaCell(2, "=ABS(A1)")), Row(2)(StringCell(1, "data"), StringCell(2, "data2"))))
+
+scala> bookOne == bookOneReloaded
+res2: Boolean = true
 ```

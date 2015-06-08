@@ -2,7 +2,6 @@ package de.sciss.poi
 
 import java.io.File
 
-import de.sciss.poi.{XSSF, StringCell, Row, Sheet, Workbook}
 import org.specs2._
 
 class PoiLoadFileSpec extends Specification { def is=
@@ -42,7 +41,7 @@ class PoiLoadFileSpec extends Specification { def is=
         StringCell(1, "B4"),
         StringCell(2, "C4")))
     )
-  )), XSSF)
+  )), Workbook.XSSF)
 
   val testBookPath = "/tmp/testBook.xlsx"
 
@@ -51,7 +50,7 @@ class PoiLoadFileSpec extends Specification { def is=
     // impure.load(testBookPath).sheets.head
     new File(testBookPath).delete()
     testBook.saveToFile(testBookPath)
-    Workbook(testBookPath).sheets.head
+    Workbook.fromFile(testBookPath).sheets.head
   }
 
   case class loadWorkbook() {

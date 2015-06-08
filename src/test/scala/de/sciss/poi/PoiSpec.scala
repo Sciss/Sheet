@@ -1,7 +1,6 @@
 package de.sciss.poi
 
 import de.sciss.poi
-import de.sciss.poi.{FormulaCell, BooleanCell, NumericCell, StringCell, Cell, Row, Sheet, Workbook}
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.scalacheck.Arbitrary._
 import org.scalacheck._
@@ -31,13 +30,13 @@ class PoiSpec extends Specification with ScalaCheck {
         /* val io = */ wb.saveToFile(path)
         // io.fold(ex ⇒ throw ex, identity).unsafePerformIO
         // impure.load(path) === wb
-        Workbook(path) === wb
+        Workbook.fromFile(path) === wb
       }
     }
 
   "Workbook" should {
     "have sheets in it" in new Workbook {
-      book.asPoi.getSheet("test") must beAnInstanceOf[HSSFSheet]
+      book.peer.getSheet("test") must beAnInstanceOf[HSSFSheet]
     }
 
       val wb1 = Workbook {
@@ -101,7 +100,7 @@ class PoiSpec extends Specification with ScalaCheck {
 
   "Sheet" can {
     "have filled cells" in new Workbook {
-      val cellText = book.asPoi.getSheet("test").getRow(0).getCell(0).getStringCellValue
+      val cellText = book.peer.getSheet("test").getRow(0).getCell(0).getStringCellValue
       cellText must beEqualTo("theCell")
     }
   }
