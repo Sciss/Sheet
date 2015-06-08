@@ -7,6 +7,6 @@
  *	This software is published under the Apache License 2.0
  */
 
-package de.sciss.poi
+package de.sciss.sheet
 
 final case class CellAddr(sheet: String, row: Int, col: Int)

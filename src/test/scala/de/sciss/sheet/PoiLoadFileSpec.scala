@@ -1,4 +1,4 @@
-package de.sciss.poi
+package de.sciss.sheet
 
 import java.io.File
 

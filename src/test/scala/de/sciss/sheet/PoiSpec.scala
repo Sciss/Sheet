@@ -1,6 +1,6 @@
-package de.sciss.poi
+package de.sciss.sheet
 
-import de.sciss.poi
+import de.sciss.sheet
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.scalacheck.Arbitrary._
 import org.scalacheck._
@@ -142,7 +142,7 @@ class PoiSpec extends Specification with ScalaCheck {
     rows <- arbitrary[Set[Row]]
   } yield Sheet(name)(rows))
 
-  implicit def arbWorkbook: Arbitrary[poi.Workbook] = Arbitrary(for {
+  implicit def arbWorkbook: Arbitrary[sheet.Workbook] = Arbitrary(for {
     sheets <- arbitrary[Set[Sheet]]
   } yield Workbook(sheets))
 

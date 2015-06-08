@@ -7,7 +7,7 @@
  *	This software is published under the Apache License 2.0
  */
 
-package de.sciss.poi
+package de.sciss.sheet
 
 sealed trait Cell {
   def index: Int

@@ -1,5 +1,5 @@
 lazy val buildSettings = Seq(
-  name               := "poi",            // was: "poi-scala"
+  name               := "Sheet",          // was: "poi-scala"
   organization       := "de.sciss",       // was: "info.folone"
   version            := "0.1.0",          // independent from folone's project
   scalaVersion       := "2.11.6",
@@ -29,7 +29,7 @@ lazy val standardSettings = buildSettings ++ Seq(
     "org.scalacheck" %% "scalacheck"                % scalaCheckVersion % "test",
     "org.scalaz"     %% "scalaz-scalacheck-binding" % scalazVersion     % "test"
   ),
-  initialCommands in console := """import de.sciss.poi._""",
+  initialCommands in console := """import de.sciss.sheet._""",
   publishMavenStyle := true,
   publishArtifact in Test := false,
   publishTo :=
@@ -65,4 +65,4 @@ lazy val standardSettings = buildSettings ++ Seq(
   }
 )
 
-lazy val poi = project.in(file(".")).settings(standardSettings)
+lazy val root = project.in(file(".")).settings(standardSettings)

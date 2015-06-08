@@ -7,7 +7,7 @@
  *	This software is published under the Apache License 2.0
  */
 
-package de.sciss.poi
+package de.sciss.sheet
 
 import org.apache.poi.hssf.usermodel.HSSFFont.FONT_ARIAL
 import org.apache.poi.ss.usermodel.{Font => POIFont, DataFormat => POIDataFormat}
