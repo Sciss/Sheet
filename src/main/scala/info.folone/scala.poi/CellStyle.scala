@@ -1,7 +1,7 @@
 package info.folone.scala.poi
 
 import org.apache.poi.hssf.usermodel.HSSFFont.FONT_ARIAL
-import org.apache.poi.ss.usermodel.{Font ⇒ POIFont, DataFormat ⇒ POIDataFormat}
+import org.apache.poi.ss.usermodel.{Font => POIFont, DataFormat => POIDataFormat}
 
 case class CellStyle(font: Font, dataFormat: DataFormat)
 
@@ -12,12 +12,12 @@ case class Font(
 
   def appliedTo(pf: POIFont): POIFont = {
     pf setFontName   name
-    pf setBoldweight boldweight
+    pf setBoldweight boldWeight
     pf setColor      color
     pf
   }
 
-  private def boldweight = if (bold) POIFont.BOLDWEIGHT_BOLD else POIFont.BOLDWEIGHT_NORMAL
+  private def boldWeight = if (bold) POIFont.BOLDWEIGHT_BOLD else POIFont.BOLDWEIGHT_NORMAL
 }
 
 case class DataFormat(
