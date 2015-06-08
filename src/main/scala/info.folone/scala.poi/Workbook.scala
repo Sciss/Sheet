@@ -1,51 +1,43 @@
 package info.folone.scala.poi
 
-import org.apache.poi._
-import ss.usermodel.{Workbook ⇒ POIWorkbook, WorkbookFactory}
-import ss.usermodel.{ Row ⇒ POIRow, Cell ⇒ POICell, CellStyle ⇒ POICellStyle }
-import java.io.{ File, FileOutputStream, OutputStream, InputStream, FileInputStream }
+import java.io.{File, FileOutputStream, InputStream, OutputStream}
+
+import org.apache.poi.ss.usermodel.{Cell => POICell, CellStyle => POICellStyle, Row => POIRow, Workbook => POIWorkbook, WorkbookFactory}
 
 import scalaz._
-import std.option._
-import std.map._
-import std.list._
-import syntax.applicative._
-import syntax.monoid._
-import syntax.std.option._
-import syntax.std.all._
-import effect.IO
-
+import scalaz.std.list._
+import scalaz.std.map._
+import scalaz.syntax.monoid._
 
 class Workbook(val sheetMap: Map[String, Sheet], format: WorkbookVersion = HSSF) {
   val sheets: Set[Sheet] = sheetMap.values.toSet
 
   private def setPoiCell(row: POIRow, cell: Cell, poiCell: POICell): Unit = {
     cell match {
-      case StringCell(index, data)  ⇒
+      case StringCell(index, data)  =>
         poiCell.setCellValue(data)
         val height = data.split("\n").size * row.getHeight
         row setHeight height.asInstanceOf[Short]
-      case BooleanCell(index, data) ⇒ poiCell.setCellValue(data)
-      case NumericCell(index, data) ⇒ poiCell.setCellValue(data)
-      case FormulaCell(index, data) ⇒ poiCell.setCellFormula(data)
-      case styledCell@StyledCell(_, _) ⇒ {
+      case BooleanCell(index, data) => poiCell.setCellValue(data)
+      case NumericCell(index, data) => poiCell.setCellValue(data)
+      case FormulaCell(index, data) => poiCell.setCellFormula(data)
+      case styledCell@StyledCell(_, _) =>
         setPoiCell(row, styledCell.nestedCell, poiCell)
-      }
     }
   }
 
   private lazy val book = {
     val workbook = format match {
-      case HSSF ⇒ new org.apache.poi.hssf.usermodel.HSSFWorkbook
-      case XSSF ⇒ new org.apache.poi.xssf.usermodel.XSSFWorkbook
+      case HSSF => new org.apache.poi.hssf.usermodel.HSSFWorkbook
+      case XSSF => new org.apache.poi.xssf.usermodel.XSSFWorkbook
     }
-    sheets foreach { sh ⇒
+    sheets foreach { sh =>
       val Sheet((name), (rows)) = sh
       val sheet = workbook createSheet name
-      rows foreach { rw ⇒
+      rows foreach { rw =>
         val Row((index), (cells)) = rw
         val row = sheet createRow index
-        cells foreach { cl ⇒
+        cells foreach { cl =>
           val poiCell = row createCell cl.index
           setPoiCell(row, cl, poiCell)
         }
@@ -62,10 +54,10 @@ class Workbook(val sheetMap: Map[String, Sheet], format: WorkbookVersion = HSSF)
       pStyle
     }
 
-    styles.keys.foreach { s ⇒
+    styles.keys.foreach { s =>
       val cellAddresses = styles(s)
       val cellStyle = pStyle(s)
-      cellAddresses.foreach { addr ⇒
+      cellAddresses.foreach { addr =>
         val cell = wb.getSheet(addr.sheet).getRow(addr.row).getCell(addr.col)
         cell setCellStyle cellStyle
       }
@@ -92,22 +84,20 @@ class Workbook(val sheetMap: Map[String, Sheet], format: WorkbookVersion = HSSF)
     * @param addrs addresses of cells, which columns size should fit cells content
     */
   def autosizeColumns(addrs: Set[CellAddr]): Workbook = {
-    addrs foreach { a ⇒ book.getSheet(a.sheet).autoSizeColumn(a.col) }
+    addrs foreach { a => book.getSheet(a.sheet).autoSizeColumn(a.col) }
     this
   }
 
-  def safeToFile(path: String): Result[Unit] = {
-    def close(resource: {def close(): Unit}): IO[Unit] = IO { resource.close() }
-    val action = IO { new FileOutputStream(new File(path)) }.bracket(close) { file ⇒
-      IO { book write file }
+  def safeToFile(path: String): Unit = {
+    val fos = new FileOutputStream(new File(path))
+    try {
+      safeToStream(fos)
+    } finally {
+      fos.close()
     }
-    EitherT(action.catchLeft)
   }
 
-  def safeToStream(stream: OutputStream): Result[Unit] = {
-    val action = IO { book write stream }
-    EitherT(action.catchLeft)
-  }
+  def safeToStream(stream: OutputStream): Unit = book.write(stream)
 
   def asPoi: POIWorkbook = book
 
@@ -123,57 +113,56 @@ object Workbook {
   def apply(sheets: Set[Sheet], format: WorkbookVersion = HSSF): Workbook =
     new Workbook(sheets.map( s => (s.name, s)).toMap, format)
 
-  def apply(path: String): Result[Workbook] = {
-    val action: IO[File] = IO { new File(path) }
-    EitherT((action <*> fromFile(HSSF)).catchLeft)
+  def apply(path: String): Workbook = {
+    val f = new File(path)
+    fromFile(HSSF)(f)
   }
 
-  def apply(path: String, format: WorkbookVersion): Result[Workbook] = {
-    val action: IO[File] = IO { new File(path) }
-    EitherT((action <*> fromFile(format)).catchLeft)
+  def apply(path: String, format: WorkbookVersion): Workbook = {
+    val f = new File(path)
+    fromFile(format)(f)
   }
 
-  def apply(is: InputStream): Result[Workbook] =
-    EitherT(fromInputStream(HSSF).map(f ⇒ f(is)).catchLeft)
-  def apply(is: InputStream, format: WorkbookVersion): Result[Workbook] =
-    EitherT(fromInputStream(format).map(f ⇒ f(is)).catchLeft)
+  def apply(is: InputStream): Workbook = fromInputStream(HSSF)(is)
 
-  private def fromFile(format: WorkbookVersion) =
-    readWorkbook[File](format, f => WorkbookFactory.create(f))
+  def apply(is: InputStream, format: WorkbookVersion): Workbook = fromInputStream(format)(is)
 
-  private def fromInputStream(format: WorkbookVersion) =
-    readWorkbook[InputStream](format, t => WorkbookFactory.create(t))
+  private def fromFile(format: WorkbookVersion)(f: File): Workbook =
+    readWorkbook[File](format, f => WorkbookFactory.create(f))(f)
 
-  private def readWorkbook[T](format: WorkbookVersion, workbookF: T => POIWorkbook) = IO { is: T ⇒
+  private def fromInputStream(format: WorkbookVersion)(is: InputStream): Workbook =
+    readWorkbook[InputStream](format, t => WorkbookFactory.create(t))(is)
+
+  private def readWorkbook[T](format: WorkbookVersion, workbookF: T => POIWorkbook)(is: T): Workbook = {
     val wb   = workbookF(is)
     val data = for {
       i     ← 0 until wb.getNumberOfSheets
-      sheet = wb.getSheetAt(i) if (sheet != null)
+      sheet = wb.getSheetAt(i) if sheet != null
       k     ← 0 to sheet.getLastRowNum
-      row   = sheet.getRow(k) if (row != null)
+      row   = sheet.getRow(k) if row != null
       j     ← 0 until row.getLastCellNum
-      cell  = row.getCell(j) if (cell != null)
+      cell  = row.getCell(j) if cell != null
         } yield (sheet, row, cell)
-    val result = data.groupBy(_._1).mapValues { lst ⇒
-      lst.map { case (s, r, c) ⇒ (r, c)}.groupBy(_._1)
-        .mapValues(l ⇒ l.map { case (r, c) ⇒ c }.toList)
+    val result = data.groupBy(_._1).mapValues { lst =>
+      lst.map { case (s, r, c) => (r, c)}.groupBy(_._1)
+        .mapValues(l => l.map { case (r, c) => c }.toList)
     }
-    val sheets = result.map { case (sheet, rowLst) ⇒
+    val sheets = result.map { case (sheet, rowLst) =>
       Sheet(sheet.getSheetName) {
-        rowLst.map { case (row, cellLst) ⇒
+        rowLst.map { case (row, cellLst) =>
           Row(row.getRowNum) {
-            cellLst.flatMap { cell ⇒
+            cellLst.flatMap { cell =>
               val index = cell.getColumnIndex
               cell.getCellType match {
-                case POICell.CELL_TYPE_NUMERIC ⇒
+                case POICell.CELL_TYPE_NUMERIC =>
                   Some(NumericCell(index, cell.getNumericCellValue))
-                case POICell.CELL_TYPE_BOOLEAN ⇒
+                case POICell.CELL_TYPE_BOOLEAN =>
                   Some(BooleanCell(index, cell.getBooleanCellValue))
-                case POICell.CELL_TYPE_FORMULA ⇒
+                case POICell.CELL_TYPE_FORMULA =>
                   Some(FormulaCell(index, cell.getCellFormula))
-                case POICell.CELL_TYPE_STRING  ⇒
+                case POICell.CELL_TYPE_STRING  =>
                   Some(StringCell(index, cell.getStringCellValue))
-                case _                      ⇒ None
+                case _                      => None
               }
             }.toSet
           }
