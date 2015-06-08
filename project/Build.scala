@@ -7,8 +7,8 @@ object Build extends Build {
 
   lazy val buildSettings = Seq(
     organization       := "info.folone",
-    scalaVersion       := "2.11.2",
-    crossScalaVersions := Seq("2.10.4", "2.11.2"),
+    scalaVersion       := "2.11.6",
+    crossScalaVersions := Seq("2.10.5", "2.11.6"),
 
     scalacOptions      := Seq(
       "-encoding", "UTF-8",
@@ -37,24 +37,24 @@ object Build extends Build {
     }
   }
 
-  val scalazVersion = "7.1.0"
+  val scalazVersion = "7.1.2"
 
   lazy val standardSettings = super.settings     ++
     Defaults.defaultSettings                     ++
     buildSettings                                ++
-    sbtrelease.ReleasePlugin.releaseSettings     ++
-    org.scalastyle.sbt.ScalastylePlugin.Settings ++
+    // sbtrelease.ReleasePlugin.releaseSettings     ++
+    // org.scalastyle.sbt.ScalastylePlugin.Settings ++
     Seq(
       name := "poi-scala",
       resolvers ++= Seq(Resolver.sonatypeRepo("releases"), Resolver.sonatypeRepo("snapshots")),
       libraryDependencies <++= (scalaVersion) { sv ⇒
         Seq(
-          "org.apache.poi" %  "poi"                       % "3.10.1",
-          "org.apache.poi" %  "poi-ooxml"                 % "3.10.1",
+          "org.apache.poi" %  "poi"                       % "3.12",
+          "org.apache.poi" %  "poi-ooxml"                 % "3.12",
           "org.scalaz"     %% "scalaz-core"               % scalazVersion,
           "org.scalaz"     %% "scalaz-effect"             % scalazVersion,
-          "org.specs2"     %% "specs2"                    % "2.4.1"        % "test",
-          "org.scalacheck" %% "scalacheck"                % "1.11.5"       % "test",
+          "org.specs2"     %% "specs2"                    % "2.4.1"        % "test",  // later versions lack scalaz-stream 2.11 dependency
+          "org.scalacheck" %% "scalacheck"                % "1.12.3"       % "test",
           "org.scalaz"     %% "scalaz-scalacheck-binding" % scalazVersion  % "test"
         )
       },
