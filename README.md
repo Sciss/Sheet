@@ -20,6 +20,17 @@ Builds with sbt 0.13 against Scala 2.10 and 2.11. Run `sbt test`, or start using
     
 The current version `v` is `"0.1.0"`.
 
+__Note:__ There is a stax-api dependency coming from Apache POI. If you experience name conflicts when using sbt-assembly in your project, apply this "simple" sbt code:
+
+```scala
+assemblyMergeStrategy in assembly := {
+  case PathList("javax", "xml", xs @ _*) => MergeStrategy.first
+  case x =>
+    val oldStrategy = (assemblyMergeStrategy in assembly).value
+    oldStrategy(x)
+}
+```
+
 ## getting started
 
 ```scala
