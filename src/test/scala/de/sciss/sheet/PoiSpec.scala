@@ -27,9 +27,7 @@ class PoiSpec extends Specification with ScalaCheck {
           })
         }
         val path = "/tmp/book.xls"
-        /* val io = */ wb.saveToFile(path)
-        // io.fold(ex ⇒ throw ex, identity).unsafePerformIO
-        // impure.load(path) === wb
+        wb.saveToFile(path)
         Workbook.fromFile(path) === wb
       }
     }
@@ -38,64 +36,6 @@ class PoiSpec extends Specification with ScalaCheck {
     "have sheets in it" in new Workbook {
       book.peer.getSheet("test") must beAnInstanceOf[HSSFSheet]
     }
-
-      val wb1 = Workbook {
-        Set(Sheet("name") {
-          Set(Row(1) {
-            Set(NumericCell(1, -13.0/5), FormulaCell(2, "ABS(B2)"))
-          },
-            Row(2) {
-              Set(StringCell(1, "data"), StringCell(2, "data2"))
-            })
-        },
-          Sheet("name") {
-            Set(Row(2) {
-              Set(BooleanCell(1, data = true), NumericCell(2, 2.4))
-            })
-          })
-      }
-      val wb2 = Workbook {
-        Set(Sheet("name") {
-          Set(Row(1) {
-            Set(NumericCell(1, -13.0/5), FormulaCell(2, "ABS(B2)"))
-          },
-            Row(2) {
-              Set(StringCell(1, "data"), StringCell(2, "data2"))
-            })
-        },
-          Sheet("name22") {
-            Set(Row(2) {
-              Set(BooleanCell(1, data = true), NumericCell(2, 2.4))
-            })
-          })
-      }
-      val wb3 = Workbook {
-        Set(Sheet("name3") {
-          Set(Row(1) {
-            Set(NumericCell(1, -13.0/5), FormulaCell(2, "ABS(B2)"))
-          },
-            Row(2) {
-              Set(StringCell(1, "data"), StringCell(2, "data2"))
-            })
-        },
-          Sheet("name32") {
-            Set(Row(2) {
-              Set(BooleanCell(1, data = true), NumericCell(2, 2.4))
-            })
-          })
-      }
-
-//    "be associative" in {
-//      ((wb1 |+| wb2) |+| wb3) must_== (wb1 |+| (wb2 |+| wb3))
-//    }
-//
-//    "satisfy right identity" in {
-//      (wb1 |+| wbInstance.zero) must_== wb1
-//    }
-//
-//    "satisfy left identity" in {
-//      (wbInstance.zero |+| wb1) must_== wb1
-//    }
   }
 
   "Sheet" can {
@@ -104,22 +44,6 @@ class PoiSpec extends Specification with ScalaCheck {
       cellText must beEqualTo("theCell")
     }
   }
-
-//  "Typeclasses" should {
-//    "satisfy for Cell" in checkProp {
-//      semigroup.laws[Cell]
-//   }
-//    "satisfy for Row" in checkProp {
-//      semigroup.laws[Row]
-//    }
-//    "satisfy for Sheet" in checkProp {
-//      semigroup.laws[Sheet]
-//    }
-//    "satisfy for Workbook" in checkProp {
-//      lazy val result = monoid.laws[info.folone.scala.poi.Workbook]
-//      skipped("a lot of nested tests to check, takes a long time")
-//    }
-//  }
 
   def positiveInt = Gen.choose(0, Integer.MAX_VALUE)
 
