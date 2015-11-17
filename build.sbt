@@ -1,9 +1,9 @@
 lazy val buildSettings = Seq(
-  name               := "Sheet",          // was: "poi-scala"
-  organization       := "de.sciss",       // was: "info.folone"
-  version            := "0.1.0",          // independent from folone's project
-  scalaVersion       := "2.11.6",
-  crossScalaVersions := Seq("2.10.5", "2.11.6"),
+  name               := "Sheet",           // was: "poi-scala"
+  organization       := "de.sciss",        // was: "info.folone"
+  version            := "0.1.1-SNAPSHOT",  // independent from folone's project
+  scalaVersion       := "2.11.7",
+  crossScalaVersions := Seq("2.11.7", "2.10.6"),
   scalacOptions     ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture"),
   licenses           := Seq("Apache License" -> url("http://opensource.org/licenses/Apache-2.0")),
   homepage           := Some(url(s"https://github.com/Sciss/${name.value}"))
@@ -11,23 +11,19 @@ lazy val buildSettings = Seq(
 
 // ---- main dependencies ----
 
-lazy val apachePOIVersion = "3.12"
+lazy val apachePOIVersion = "3.13"
 
 // ---- test dependencies ----
 
-lazy val scalazVersion      = "7.1.2"
 lazy val specs2Version      = "2.4.1"  // later versions lack scalaz-stream 2.11 dependency
-lazy val scalaCheckVersion  = "1.12.3"
+lazy val scalaCheckVersion  = "1.12.5"
 
 lazy val standardSettings = buildSettings ++ Seq(
   libraryDependencies ++= Seq(
     "org.apache.poi" %  "poi"                       % apachePOIVersion,
     "org.apache.poi" %  "poi-ooxml"                 % apachePOIVersion,
-    "org.scalaz"     %% "scalaz-core"               % scalazVersion     % "test",
-    // "org.scalaz"     %% "scalaz-effect"             % scalazVersion  % "test",
     "org.specs2"     %% "specs2"                    % specs2Version     % "test",
-    "org.scalacheck" %% "scalacheck"                % scalaCheckVersion % "test",
-    "org.scalaz"     %% "scalaz-scalacheck-binding" % scalazVersion     % "test"
+    "org.scalacheck" %% "scalacheck"                % scalaCheckVersion % "test"
   ),
   initialCommands in console := """import de.sciss.sheet._""",
   publishMavenStyle := true,
