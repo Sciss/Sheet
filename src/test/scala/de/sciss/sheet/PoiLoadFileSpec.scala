@@ -46,8 +46,6 @@ class PoiLoadFileSpec extends Specification { def is=
   val testBookPath = "/tmp/testBook.xlsx"
 
   val targetWorksheet = {
-    // new impure.WorkbookImpure(testBook).overwrite(testBookPath)
-    // impure.load(testBookPath).sheets.head
     new File(testBookPath).delete()
     testBook.saveToFile(testBookPath)
     Workbook.fromFile(testBookPath).sheets.head
