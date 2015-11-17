@@ -1,7 +1,7 @@
 lazy val buildSettings = Seq(
   name               := "Sheet",           // was: "poi-scala"
   organization       := "de.sciss",        // was: "info.folone"
-  version            := "0.1.1-SNAPSHOT",  // independent from folone's project
+  version            := "0.1.1",           // independent from folone's project
   scalaVersion       := "2.11.7",
   crossScalaVersions := Seq("2.11.7", "2.10.6"),
   scalacOptions     ++= Seq("-deprecation", "-unchecked", "-feature", "-encoding", "utf8", "-Xfuture"),
