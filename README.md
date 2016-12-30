@@ -12,13 +12,13 @@ What I did here is remove the Scalaz dependency, and publish an independent arti
 
 ## building
 
-Builds with sbt 0.13 against Scala 2.10 and 2.11. Run `sbt test`, or start using `sbt console`.
+Builds with sbt 0.13 against Scala 2.12, 2.11, 2.10. Run `sbt test`, or start using `sbt console`.
 
 ## linking
 
     "de.sciss" %% "sheet" % v
     
-The current version `v` is `"0.1.1"`.
+The current version `v` is `"0.1.2"`.
 
 __Note:__ There is a stax-api dependency coming from Apache POI. If you experience name conflicts when using sbt-assembly in your project, apply this "simple" sbt code:
 
